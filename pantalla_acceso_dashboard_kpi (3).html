@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard KPI | Informe de Resultados</title>
+  <style>
+    :root {
+      --azul:#0b2c6b;
+      --azul2:#163d8f;
+      --azul3:#285bb8;
+      --fondo:#eef3fa;
+      --card:#ffffff;
+      --texto:#1f2937;
+      --muted:#64748b;
+      --borde:#d7e0ef;
+      --shadow:0 14px 32px rgba(11,44,107,.10);
+      --radius:22px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(135deg,#e8eef7 0%,#dce6f4 100%);color:var(--texto)}
+    .hidden{display:none}
+    .screen{min-height:100vh;padding:20px}
+    .login-wrap{min-height:calc(100vh - 40px);display:flex;align-items:center;justify-content:center}
+    .login-card{width:100%;max-width:470px;background:var(--card);border:1px solid var(--borde);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+    .topbar{background:var(--azul);color:#fff;padding:18px 24px;font-size:14px;font-weight:700;letter-spacing:.4px;text-transform:uppercase}
+    .login-content{padding:32px 28px 28px;text-align:center}
+    .lock{width:74px;height:74px;margin:0 auto 18px;border-radius:50%;background:#edf3ff;display:flex;align-items:center;justify-content:center;font-size:34px}
+    h1{margin:0 0 8px;font-size:28px;color:var(--azul)}
+    .subtitle{margin:0 auto 24px;max-width:360px;font-size:15px;line-height:1.55;color:#4b5563}
+    .label{display:block;text-align:left;font-size:13px;font-weight:700;margin-bottom:8px;color:#334155}
+    .input{width:100%;padding:14px 16px;border:1px solid var(--borde);border-radius:12px;font-size:15px;outline:none;background:#fafcff;margin-bottom:16px}
+    .input:focus{border-color:var(--azul2);box-shadow:0 0 0 3px rgba(22,61,143,.12)}
+    .btn{width:100%;border:0;border-radius:12px;padding:14px 18px;background:var(--azul);color:#fff;font-size:15px;font-weight:700;cursor:pointer}
+    .error{margin-top:12px;font-size:13px;color:#b91c1c;min-height:18px}
+    .helper{margin-top:14px;font-size:12px;color:#6b7280;line-height:1.45}
+
+    .dashboard{max-width:1460px;margin:0 auto}
+    .hero{background:linear-gradient(135deg,var(--azul) 0%,var(--azul2) 100%);color:#fff;border-radius:28px;padding:28px;box-shadow:var(--shadow);margin-bottom:18px}
+    .hero-top{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;flex-wrap:wrap}
+    .eyebrow{font-size:13px;font-weight:700;letter-spacing:.35px;text-transform:uppercase;opacity:.9;margin-bottom:8px}
+    .hero h2{margin:0 0 10px;font-size:31px;line-height:1.15}
+    .hero p{margin:0;max-width:860px;line-height:1.6;color:rgba(255,255,255,.92)}
+    .badge{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);padding:12px 14px;border-radius:18px;min-width:220px;text-align:right}
+    .badge strong{display:block;font-size:28px;margin-top:4px}
+
+    .nav{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+    .nav a{background:#fff;border:1px solid var(--borde);padding:10px 14px;border-radius:999px;text-decoration:none;color:var(--azul);font-size:13px;font-weight:700;box-shadow:0 6px 18px rgba(11,44,107,.06)}
+
+    .grid-kpi{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-bottom:18px}
+    .card{background:#fff;border:1px solid var(--borde);border-radius:22px;padding:18px;box-shadow:0 10px 24px rgba(11,44,107,.07)}
+    .kpi-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.25px;font-weight:700;margin-bottom:8px}
+    .kpi-value{font-size:34px;line-height:1;color:var(--azul);font-weight:800;margin-bottom:8px}
+    .kpi-note{font-size:13px;color:var(--muted);line-height:1.45}
+
+    .section{margin-bottom:18px}
+    .title-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+    .section-title{margin:0;font-size:22px;color:var(--azul)}
+    .section-note{font-size:13px;color:var(--muted)}
+    .pill{display:inline-block;font-size:12px;font-weight:700;border-radius:999px;padding:6px 10px;background:#eef4ff;color:var(--azul)}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    .grid-3{display:grid;grid-template-columns:1.1fr .9fr;gap:18px}
+
+    .bars{display:flex;align-items:flex-end;gap:16px;min-height:250px;padding-top:8px}
+    .bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:10px}
+    .bar-value{font-size:14px;font-weight:700;color:var(--azul)}
+    .bar-wrap{width:100%;height:210px;background:linear-gradient(180deg,#f8fbff 0%,#eef4fb 100%);border-radius:18px;padding:10px;border:1px solid #e6edf8;display:flex;align-items:flex-end;justify-content:center}
+    .bar{width:62%;border-radius:16px 16px 8px 8px;background:linear-gradient(180deg,var(--azul3),var(--azul));box-shadow:inset 0 -10px 18px rgba(255,255,255,.1)}
+    .bar-label{text-align:center;font-size:13px;font-weight:700;color:#334155}
+
+    .mini-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+    .mini{padding:14px;border:1px solid #e9eef7;border-radius:16px;background:#fbfdff}
+    .mini strong{display:block;font-size:24px;color:var(--azul);margin-top:6px}
+    .mini span{font-size:13px;color:var(--muted)}
+
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:10px;border-bottom:1px solid #edf2f8;text-align:left;font-size:14px;vertical-align:top}
+    th{font-size:12px;text-transform:uppercase;letter-spacing:.25px;color:var(--muted);background:#fbfdff}
+    td.num,th.num{text-align:right}
+    .table-wrap{overflow-x:auto}
+    .callout{margin-top:16px;border-left:4px solid var(--azul2);background:#f8fbff;padding:14px 16px;border-radius:14px;color:#334155;line-height:1.55;font-size:14px}
+    .footer-note{text-align:center;color:var(--muted);font-size:13px;padding:6px 0 2px}
+
+    @media (max-width:1280px){.grid-kpi{grid-template-columns:repeat(3,1fr)}.grid-2,.grid-3{grid-template-columns:1fr}}
+    @media (max-width:720px){.grid-kpi{grid-template-columns:repeat(2,1fr)}.hero h2{font-size:24px}.kpi-value{font-size:28px}.screen{padding:14px}}
+  </style>
+</head>
+<body>
+  <section id="loginScreen" class="screen">
+    <div class="login-wrap">
+      <div class="login-card">
+        <div class="topbar">Panel interactivo de indicadores</div>
+        <div class="login-content">
+          <div class="lock">🔒</div>
+          <h1>Acceso restringido</h1>
+          <p class="subtitle">
+            <strong>INFORME de Resultados</strong><br>
+            Departamento Capital – J.P.S.D. I<br>
+            Período: Enero a Marzo 2026
+          </p>
+          <label class="label" for="password">Contraseña</label>
+          <input id="password" class="input" type="password" placeholder="Ingrese su contraseña" />
+          <button id="loginBtn" class="btn">Ingresar al panel</button>
+          <div id="errorText" class="error"></div>
+          <div class="helper">Acceso visual al tablero HTML con KPI, tablas y gráficos del período analizado.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="dashboardScreen" class="screen hidden">
+    <div class="dashboard">
+      <div class="hero">
+        <div class="hero-top">
+          <div>
+            <div class="eyebrow">Informe de Resultados</div>
+            <h2>Departamento Capital – J.P.S.D. I</h2>
+            <p>Tablero consolidado con los principales indicadores del período enero a marzo de 2026, organizado por maniobras operativas, aprehendidos, reincidencias, detenidos en Es.Tra.D.A. y procesos contravencionales.</p>
+          </div>
+          <div class="badge">Período relevado<strong>Ene – Mar 2026</strong></div>
+        </div>
+      </div>
+
+      <div class="nav">
+        <a href="#maniobras">Maniobras operativas</a>
+        <a href="#aprehendidos">Aprehendidos</a>
+        <a href="#reincidencia-aprehendidos">Reincidentes aprehendidos</a>
+        <a href="#detenidos">Detenidos Es.Tra.D.A.</a>
+        <a href="#contravenciones">Contravenciones</a>
+      </div>
+
+      <div class="grid-kpi">
+        <div class="card"><div class="kpi-label">Intervenciones operativas</div><div class="kpi-value">8.442</div><div class="kpi-note">UEP + comisarías de jurisdicción en control territorial y tecnológico.</div></div>
+        <div class="card"><div class="kpi-label">Biométricos</div><div class="kpi-value">3.576</div><div class="kpi-note">Consultas tecnológicas acumuladas en el despliegue preventivo.</div></div>
+        <div class="card"><div class="kpi-label">Aprehendidos</div><div class="kpi-value">1.290</div><div class="kpi-note">Ingresos a Comisaría 33 durante el trimestre.</div></div>
+        <div class="card"><div class="kpi-label">Reincidentes aprehendidos</div><div class="kpi-value">207</div><div class="kpi-note">17% de los ingresos informados en el bloque de aprehendidos.</div></div>
+        <div class="card"><div class="kpi-label">Detenidos</div><div class="kpi-value">428</div><div class="kpi-note">Ingresos registrados en Es.Tra.D.A. entre enero y marzo.</div></div>
+        <div class="card"><div class="kpi-label">Contravenciones</div><div class="kpi-value">431</div><div class="kpi-note">Procesos contravencionales acumulados en el período.</div></div>
+      </div>
+
+      <div id="maniobras" class="section card">
+        <div class="title-row">
+          <h3 class="section-title">Maniobras operativas y control tecnológico</h3>
+          <span class="pill">Total general: 8.442</span>
+        </div>
+        <div class="grid-2">
+          <div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th colspan="2">Unidad Especial de Patrullaje (U.E.P.)</th></tr></thead>
+                <tbody>
+                  <tr><td>Personas controladas / CEO</td><td class="num">1.095</td></tr>
+                  <tr><td>Biométricos</td><td class="num">2.284</td></tr>
+                  <tr><td>Capturas / medidas / paraderos</td><td class="num">23</td></tr>
+                  <tr><td>Autos controlados</td><td class="num">1.098</td></tr>
+                  <tr><td>Motos controladas</td><td class="num">760</td></tr>
+                  <tr><td>Colectivos controlados</td><td class="num">162</td></tr>
+                  <tr><td>Taxis/remises controlados</td><td class="num">154</td></tr>
+                  <tr><td>Actas viales</td><td class="num">17</td></tr>
+                  <tr><td>Autos retenidos</td><td class="num">2</td></tr>
+                  <tr><td>Motos retenidas</td><td class="num">2</td></tr>
+                  <tr><td>Licencias retenidas</td><td class="num">1</td></tr>
+                  <tr><th>Total UEP</th><th class="num">5.598</th></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th colspan="2">Comisarías 4°, 5°, 6°, 33° y 59°</th></tr></thead>
+                <tbody>
+                  <tr><td>Personas controladas / CEO</td><td class="num">590</td></tr>
+                  <tr><td>Biométricos</td><td class="num">1.292</td></tr>
+                  <tr><td>Autos controlados</td><td class="num">400</td></tr>
+                  <tr><td>Motos controladas</td><td class="num">274</td></tr>
+                  <tr><td>Colectivos controlados</td><td class="num">113</td></tr>
+                  <tr><td>Taxis/remises controlados</td><td class="num">175</td></tr>
+                  <tr><th>Total comisarías</th><th class="num">2.844</th></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="mini-stats" style="margin-top:12px;">
+              <div class="mini"><span>Personas controladas</span><strong>1.685</strong></div>
+              <div class="mini"><span>Vehículos controlados</span><strong>3.136</strong></div>
+              <div class="mini"><span>Biométricos totales</span><strong>3.576</strong></div>
+              <div class="mini"><span>Capturas</span><strong>23</strong></div>
+            </div>
+          </div>
+        </div>
+        <div class="callout">El módulo operativo muestra una presencia preventiva intensa, con fuerte apoyo tecnológico y resultados judiciales concretos. La combinación de controles personales, vehiculares y biométricos permite visualizar la magnitud del despliegue y su capacidad de saturación territorial.</div>
+      </div>
+
+      <div id="aprehendidos" class="section grid-3">
+        <div class="card">
+          <div class="title-row"><h3 class="section-title">Aprehendidos – ingresos a Comisaría 33°</h3><span class="pill">Total: 1.290</span></div>
+          <div class="bars">
+            <div class="bar-col"><div class="bar-value">323</div><div class="bar-wrap"><div class="bar" style="height:62.8%"></div></div><div class="bar-label">Enero 2026</div></div>
+            <div class="bar-col"><div class="bar-value">453</div><div class="bar-wrap"><div class="bar" style="height:88.1%"></div></div><div class="bar-label">Febrero 2026</div></div>
+            <div class="bar-col"><div class="bar-value">514</div><div class="bar-wrap"><div class="bar" style="height:100%"></div></div><div class="bar-label">Marzo 2026<br><span style="font-weight:400;color:#64748b">al 23/03</span></div></div>
+          </div>
+          <div class="callout">La curva mensual es ascendente dentro del trimestre y marzo ya supera a febrero aun tratándose de un mes parcial, lo que refuerza la lectura de incremento operativo sostenido sobre el territorio.</div>
+        </div>
+        <div class="card">
+          <div class="title-row"><h3 class="section-title">Top 10 de Crías/Cuerpos intervinientes</h3><span class="section-note">Ranking del bloque de aprehendidos</span></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Dependencia</th><th class="num">Intervenciones</th></tr></thead>
+              <tbody>
+                <tr><td>EPOA 1</td><td class="num">370</td></tr>
+                <tr><td>UEP</td><td class="num">349</td></tr>
+                <tr><td>UCAR</td><td class="num">132</td></tr>
+                <tr><td>CUMOT</td><td class="num">101</td></tr>
+                <tr><td>UAP</td><td class="num">80</td></tr>
+                <tr><td>UCAR PARQUE</td><td class="num">56</td></tr>
+                <tr><td>UPP</td><td class="num">38</td></tr>
+                <tr><td>Cria_5</td><td class="num">22</td></tr>
+                <tr><td>Cria_4</td><td class="num">18</td></tr>
+                <tr><td>Cria_33</td><td class="num">15</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="callout">EPOA 1 y UEP concentran la mayor carga de actuación del ranking, consolidándose como los actores predominantes del bloque de aprehensiones informadas.</div>
+        </div>
+      </div>
+
+      <div id="reincidencia-aprehendidos" class="section grid-2">
+        <div class="card">
+          <div class="title-row"><h3 class="section-title">Reincidencias de aprehendidos</h3><span class="pill">207 reincidentes</span></div>
+          <div class="mini-stats">
+            <div class="mini"><span>Reincidentes del período</span><strong>207</strong></div>
+            <div class="mini"><span>Porcentaje sobre ingresos</span><strong>17%</strong></div>
+            <div class="mini"><span>Severos</span><strong>82</strong></div>
+            <div class="mini"><span>Leves</span><strong>125</strong></div>
+          </div>
+          <div class="callout">El bloque de aprehendidos exhibe un núcleo de reiteración relevante. Aunque predominan los reincidentes leves, el volumen de casos severos amerita seguimiento nominal y enfoque operativo específico.</div>
+        </div>
+        <div class="card">
+          <div class="title-row"><h3 class="section-title">Top reincidentes de aprehendidos</h3><span class="section-note">YTD 2026</span></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Persona</th><th class="num">Ing.</th><th class="num">Reinc.</th></tr></thead>
+              <tbody>
+                <tr><td>ARREDONDO OSCAR ALEJANDRO</td><td class="num">10</td><td class="num">9</td></tr>
+                <tr><td>VALLEJOS MAURO ABRAHAM</td><td class="num">9</td><td class="num">8</td></tr>
+                <tr><td>BENITEZ FRANCO MIGUEL</td><td class="num">7</td><td class="num">6</td></tr>
+                <tr><td>SANCHEZ HERNAN EDGARDO</td><td class="num">7</td><td class="num">6</td></tr>
+                <tr><td>RIQUELME LUCIANO DAMIAN</td><td class="num">7</td><td class="num">6</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="callout">El ranking concentra perfiles de alta reiteración y permite visibilizar objetivos concretos para seguimiento operativo y articulación con la esfera judicial.</div>
+        </div>
+      </div>
+
+      <div id="detenidos" class="section grid-3">
+        <div class="card">
+          <div class="title-row"><h3 class="section-title">Detenidos en Es.Tra.D.A.</h3><span class="pill">Total: 428</span></div>
+          <div class="bars">
+            <div class="bar-col"><div class="bar-value">136</div><div class="bar-wrap"><div class="bar" style="height:75.1%"></div></div><div class="bar-label">Enero 2026</div></div>
+            <div class="bar-col"><div class="bar-value">181</div><div class="bar-wrap"><div class="bar" style="height:100%"></div></div><div class="bar-label">Febrero 2026</div></div>
+            <div class="bar-col"><div class="bar-value">111</div><div class="bar-wrap"><div class="bar" style="height:61.3%"></div></div><div class="bar-label">Marzo 2026<br><span style="font-weight:400;color:#64748b">hasta el 20</span></div></div>
+          </div>
+          <div class="callout">El comportamiento mensual de los detenidos mantiene ritmo sostenido, con febrero como pico del trimestre y marzo aún en acumulado parcial.</div>
+        </div>
+        <div class="card">
+          <div class="title-row"><h3 class="section-title">Condición de egreso</h3><span class="section-note">No figura en el informe un corte por reincidencia según egreso</span></div>
+          <div class="mini-stats">
+            <div class="mini"><span>Procesados en libertad</span><strong>204</strong></div>
+            <div class="mini"><span>Enviados al penal</span><strong>218</strong></div>
+            <div class="mini"><span>Otros traslados</span><strong>6</strong></div>
+            <div class="mini"><span>Total general</span><strong>428</strong></div>
+          </div>
+          <div class="table-wrap" style="margin-top:12px;">
+            <table>
+              <thead><tr><th>Condición</th><th class="num">Porcentaje</th></tr></thead>
+              <tbody>
+                <tr><td>Procesados en Libertad</td><td class="num">47,7%</td></tr>
+                <tr><td>Enviados al Penal</td><td class="num">50,9%</td></tr>
+                <tr><td>Otros Traslados</td><td class="num">1,4%</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="callout">El egreso de detenidos presenta una distribución equilibrada, con ligera preeminencia de traslados al sistema penitenciario. El informe no aporta un desglose específico de reincidencia por condición de egreso.</div>
+        </div>
+      </div>
+
+      <div class="section grid-2">
+        <div class="card">
+          <div class="title-row"><h3 class="section-title">Dependencias vinculadas a detenidos</h3><span class="pill">Suma: 428</span></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Dependencia</th><th class="num">Total</th></tr></thead>
+              <tbody>
+                <tr><td>EPOA 1</td><td class="num">94</td></tr>
+                <tr><td>UAP</td><td class="num">77</td></tr>
+                <tr><td>UID</td><td class="num">50</td></tr>
+                <tr><td>UEP CAPITAL</td><td class="num">41</td></tr>
+                <tr><td>Cria_4</td><td class="num">36</td></tr>
+                <tr><td>Cria_33</td><td class="num">21</td></tr>
+                <tr><td>Cria_6</td><td class="num">19</td></tr>
+                <tr><td>UMAR</td><td class="num">15</td></tr>
+                <tr><td>UCAR</td><td class="num">14</td></tr>
+                <tr><td>Cria_59</td><td class="num">12</td></tr>
+                <tr><td>OF Fiscal</td><td class="num">12</td></tr>
+                <tr><td>ESTRADA</td><td class="num">12</td></tr>
+                <tr><td>PODER JUDICIAL</td><td class="num">11</td></tr>
+                <tr><td>Cria_5</td><td class="num">9</td></tr>
+                <tr><td>UNIDAD PARQUE</td><td class="num">3</td></tr>
+                <tr><td>UPAT</td><td class="num">2</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="callout">El mapa de participación en detenidos vuelve a mostrar concentración en EPOA 1, UAP, UID y UEP CAPITAL, señalando los nodos de mayor aporte al flujo de ingresos de Es.Tra.D.A.</div>
+        </div>
+        <div id="contravenciones" class="card">
+          <div class="title-row"><h3 class="section-title">Contravenciones – eficiencia y reincidencia</h3><span class="pill">Total: 431</span></div>
+          <div class="mini-stats">
+            <div class="mini"><span>Ingresos totales</span><strong>431</strong></div>
+            <div class="mini"><span>Personas únicas</span><strong>423</strong></div>
+            <div class="mini"><span>Reingresos del período</span><strong>8</strong></div>
+            <div class="mini"><span>Artículos acumulados</span><strong>431</strong></div>
+            <div class="mini"><span>Reincidentes por DNI</span><strong>7</strong></div>
+            <div class="mini"><span>Severos / Leves</span><strong>1 / 6</strong></div>
+          </div>
+          <div class="callout">El módulo contravencional exhibe baja reincidencia inmediata, alto peso del control del espacio público y fuerte incidencia de artículos vinculados a convivencia, autoridad y seguridad preventiva.</div>
+        </div>
+      </div>
+
+      <div class="section grid-2">
+        <div class="card">
+          <div class="title-row"><h3 class="section-title">Dinámica mensual contravencional</h3><span class="section-note">Sucesos del período</span></div>
+          <div class="bars">
+            <div class="bar-col"><div class="bar-value">163</div><div class="bar-wrap"><div class="bar" style="height:100%"></div></div><div class="bar-label">Enero</div></div>
+            <div class="bar-col"><div class="bar-value">156</div><div class="bar-wrap"><div class="bar" style="height:95.7%"></div></div><div class="bar-label">Febrero</div></div>
+            <div class="bar-col"><div class="bar-value">112</div><div class="bar-wrap"><div class="bar" style="height:68.7%"></div></div><div class="bar-label">Marzo<br><span style="font-weight:400;color:#64748b">al 23/03</span></div></div>
+          </div>
+          <div class="callout">El comportamiento del proceso contravencional es estable y sostenido, con valores altos desde el inicio del trimestre y marzo aún incompleto.</div>
+        </div>
+        <div class="card">
+          <div class="title-row"><h3 class="section-title">Reincidentes contravencionales</h3><span class="pill">5% sobre ingresos</span></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Persona</th><th class="num">Ing.</th><th class="num">Reinc.</th></tr></thead>
+              <tbody>
+                <tr><td>ROGERS POLICHINO JOAQUIN ALFREDO</td><td class="num">3</td><td class="num">2</td></tr>
+                <tr><td>QUIROGA QUIROGA DANIEL HUMBERTO</td><td class="num">2</td><td class="num">1</td></tr>
+                <tr><td>RADICCI FARIAS LUCAS</td><td class="num">2</td><td class="num">1</td></tr>
+                <tr><td>MOYANO ALEJANDRO EMANUEL</td><td class="num">2</td><td class="num">1</td></tr>
+                <tr><td>QUIROGA DIAZ LUCAS MARIANO</td><td class="num">2</td><td class="num">1</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="callout">La reiteración contravencional es baja en términos relativos y se concentra en pocos casos nominales, lo que facilita la focalización preventiva y el seguimiento específico.</div>
+        </div>
+      </div>
+
+      <div class="section card">
+        <div class="title-row"><h3 class="section-title">Artículos contravencionales con mayor presencia</h3><span class="section-note">Discriminación por artículo</span></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Artículo</th><th>Descripción</th><th class="num">Total</th></tr></thead>
+            <tbody>
+              <tr><td>57</td><td>Cuidado de vehículos sin autorización legal (Trapitos)</td><td class="num">95</td></tr>
+              <tr><td>67 bis</td><td>Efectividad de Cumplimiento de Pena (Conversión de multa)</td><td class="num">63</td></tr>
+              <tr><td>46</td><td>Ofensa personal a funcionario público</td><td class="num">45</td></tr>
+              <tr><td>52</td><td>Portación de arma blanca u objeto cortante o contundente</td><td class="num">44</td></tr>
+              <tr><td>95</td><td>Ebriedad en lugar público o abierto al público</td><td class="num">42</td></tr>
+              <tr><td>58</td><td>Limpieza de vehículos en la vía pública</td><td class="num">40</td></tr>
+              <tr><td>53</td><td>Portación de elementos idóneos para delinquir</td><td class="num">13</td></tr>
+              <tr><td>43</td><td>Negación de informes sobre la propia identidad personal</td><td class="num">12</td></tr>
+              <tr><td>115</td><td>Conducta sospechosa</td><td class="num">12</td></tr>
+              <tr><td>45</td><td>Uso indebido de llamadas</td><td class="num">10</td></tr>
+              <tr><td>55</td><td>Actos turbatorios y desórdenes</td><td class="num">9</td></tr>
+              <tr><td>67</td><td>Conducción Peligrosa</td><td class="num">7</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout">La mayor concentración se ubica en el uso del espacio público, el cumplimiento sancionatorio y las conductas que afectan autoridad, seguridad y convivencia. Los artículos 57, 58, 67 bis, 46, 52 y 95 estructuran el núcleo principal del control contravencional del trimestre.</div>
+      </div>
+
+      <div class="footer-note">Dashboard HTML ampliado con los KPI visibles del informe. Contraseña de acceso: 01confidencial.</div>
+    </div>
+  </section>
+
+  <script>
+    const ACCESS_PASSWORD='01confidencial';
+    const loginBtn=document.getElementById('loginBtn');
+    const passwordInput=document.getElementById('password');
+    const errorText=document.getElementById('errorText');
+    const loginScreen=document.getElementById('loginScreen');
+    const dashboardScreen=document.getElementById('dashboardScreen');
+    function openDashboard(){loginScreen.classList.add('hidden');dashboardScreen.classList.remove('hidden');window.scrollTo({top:0,behavior:'smooth'})}
+    function validateAccess(){const value=passwordInput.value.trim();if(value===ACCESS_PASSWORD){errorText.textContent='';openDashboard()}else{errorText.textContent='Contraseña incorrecta. Intente nuevamente.'}}
+    loginBtn.addEventListener('click',validateAccess);
+    passwordInput.addEventListener('keydown',e=>{if(e.key==='Enter')validateAccess()});
+  </script>
+</body>
+</html>
